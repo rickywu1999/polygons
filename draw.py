@@ -9,7 +9,7 @@ def add_polygon( points, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
 
 def draw_polygons( points, screen, color ):
     for i in range(len(points)/3):
-        draw_line((int)(points[3*i][0]),(int)(points[i][1]),
+        draw_line((int)(points[3*i][0]),(int)(points[3*i][1]),
                   (int)(points[3*i+1][0]),(int)(points[3*i+1][1]),
                   screen,color)
         draw_line((int)(points[3*i][0]),(int)(points[3*i][1]),
@@ -43,23 +43,36 @@ def add_sphere( edges, cx, cy, cz, r, step ):
     num_steps = int(1/step+0.1)
 
     i = 0
+    print(str(len(points)))
     while i < (len(points)):
-        if i > (len(points)-num_steps-1):
+        print(str(i))
+
+        if (i%num_steps) == (num_steps-1):
+            print("passed")
+            pass
+
+        elif i > (len(points)-num_steps-1):
+            print("last part")
             add_polygon(edges,
                         points[i][0],points[i][1],points[i][2],
-                        points[i+1][0],points[i+1][0],points[i+1][0],
-                        points[i/num_steps+1][0],points[i/num_steps+1][0],points[i/num_steps+1][0])
-        elif (i/num_steps) == (num_steps-1):
+                        points[i+1][0],points[i+1][1],points[i+1][2],
+                        points[i/num_steps][0],points[i/num_steps][1],points[i/num_steps][2])
             add_polygon(edges,
                         points[i][0],points[i][1],points[i][2],
-                        points[i+1-num_steps][0],points[i+1-num_steps][0],points[i+1-num_steps][0],
-                        points[i+1][0],points[i+1][0],points[i+1][0])
+                        points[i/num_steps+1][0],points[i/num_steps+1][1],points[i/num_steps+1][2],
+                        points[i/num_steps][0],points[i/num_steps][1],points[i/num_steps][2])
+            
         else:
+            pass
             add_polygon(edges,
                         points[i][0],points[i][1],points[i][2],
-                        points[i+1][0],points[i+1][0],points[i+1][0],
-                        points[i+1+num_steps][0],points[i+1+num_steps][0],points[i+1+num_steps][0])
-    
+                        points[i+1][0],points[i+1][1],points[i+1][2],
+                        points[i+num_steps][0],points[i+num_steps][1],points[i+num_steps][2])
+            add_polygon(edges,
+                        points[i][0],points[i][1],points[i][2],
+                        points[i+1+num_steps][0],points[i+1+num_steps][1],points[i+1+num_steps][2],
+                        points[i+num_steps][0],points[i+num_steps][1],points[i+num_steps][2])
+        i+=1
 
 def generate_sphere( cx, cy, cz, r, step ):
     points = []
