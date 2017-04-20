@@ -7,72 +7,64 @@ def add_polygon( points, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
     add_point(points,x1,y1,z1)
     add_point(points,x2,y2,z2)
 
+
 def draw_polygons( points, screen, color ):
     for i in range(len(points)/3):
-        draw_line((int)(points[3*i][0]),(int)(points[3*i][1]),
-                  (int)(points[3*i+1][0]),(int)(points[3*i+1][1]),
-                  screen,color)
-        draw_line((int)(points[3*i][0]),(int)(points[3*i][1]),
-                  (int)(points[3*i+2][0]),(int)(points[3*i+2][1]),
-                  screen,color)
-        draw_line((int)(points[3*i+1][0]),(int)(points[3*i+1][1]),
-                  (int)(points[3*i+2][0]),(int)(points[3*i+2][1]),
-                  screen,color)
+        a = 3*i
+        
+        v1 = (points[a+1][0]-points[a][0]) * (points[a+2][1] - points[a][1])
+        v2 = (points[a+1][1]-points[a][1]) * (points[a+2][0] - points[a][0])
+        v = v1 - v2
+        if v > 0:
+            draw_line((int)(points[a][0]),(int)(points[a][1]),
+                      (int)(points[a+1][0]),(int)(points[a+1][1]),
+                      screen,color)
+            draw_line((int)(points[a][0]),(int)(points[a][1]),
+                      (int)(points[a+2][0]),(int)(points[a+2][1]),
+                      screen,color)
+            draw_line((int)(points[a+1][0]),(int)(points[a+1][1]),
+                      (int)(points[a+2][0]),(int)(points[a+2][1]),
+                      screen,color)
 
 def add_box( points, x, y, z, width, height, depth ):
     x1 = x + width
     y1 = y - height
     z1 = z - depth
     
-    add_polygon(points,x,y,z,x1,y1,z,x,y1,z)
-    add_polygon(points,x1,y,z,x1,y1,z1,x1,y,z1)
-    add_polygon(points,x1,y,z1,x,y1,z1,x1,y1,z1)
-    add_polygon(points,x,y,z1,x,y1,z,x,y1,z1)
-    add_polygon(points,x,y,z,x1,y,z1,x,y,z1)
-    add_polygon(points,x,y1,z1,x1,y1,z,x,y1,z)
-    
-    add_polygon(points,x,y,z,x1,y1,z,x1,y,z)
-    add_polygon(points,x1,y,z,x1,y1,z1,x1,y1,z)
-    add_polygon(points,x1,y,z1,x,y1,z1,x,y,z1)
-    add_polygon(points,x,y,z1,x,y1,z,x,y,z)
-    add_polygon(points,x,y,z,x1,y,z1,x1,y,z)
-    add_polygon(points,x,y1,z1,x1,y1,z,x1,y1,z1)
+    add_polygon(points,x,y,z,x,y1,z,x1,y1,z)
+    add_polygon(points,x1,y1,z,x1,y,z,x,y,z)
+    add_polygon(points,x1,y,z,x1,y1,z,x1,y1,z1)
+    add_polygon(points,x1,y1,z1,x1,y,z1,x1,y,z)
+    add_polygon(points,x1,y,z1,x1,y1,z1,x,y1,z1)
+    add_polygon(points,x,y1,z1,x,y,z1,x1,y,z1)
+    add_polygon(points,x,y,z1,x,y1,z1,x,y1,z)
+    add_polygon(points,x,y1,z,x,y,z,x,y,z1)
+    add_polygon(points,x,y,z1,x,y,z,x1,y,z)
+    add_polygon(points,x1,y,z,x1,y,z1,x,y,z1)
+    add_polygon(points,x1,y1,z1,x1,y1,z,x,y1,z)
+    add_polygon(points,x,y1,z,x,y1,z1,x1,y1,z1)
 
 def add_sphere( edges, cx, cy, cz, r, step ):
-    points = generate_sphere(cx, cy, cz, r, step)
-    num_steps = int(1/step+0.1)
+    p = generate_sphere(cx, cy, cz, r, step)
+    n = int(1/step+0.1)
+    l = len(p)
+    
+    for lat in range(0,n):
+        for lon in range(0,n):
+            i = lat * n + lon + lat
 
-    i = 0
-    print(str(len(points)))
-    while i < (len(points)):
-        print(str(i))
-
-        if (i%num_steps) == (num_steps-1):
-            print("passed")
-            pass
-
-        elif i > (len(points)-num_steps-1):
-            print("last part")
-            add_polygon(edges,
-                        points[i][0],points[i][1],points[i][2],
-                        points[i+1][0],points[i+1][1],points[i+1][2],
-                        points[i/num_steps][0],points[i/num_steps][1],points[i/num_steps][2])
-            add_polygon(edges,
-                        points[i][0],points[i][1],points[i][2],
-                        points[i/num_steps+1][0],points[i/num_steps+1][1],points[i/num_steps+1][2],
-                        points[i/num_steps][0],points[i/num_steps][1],points[i/num_steps][2])
+            if lon != (n+1):
+                add_polygon(edges,
+                            p[i][0],p[i][1],p[i][2],
+                            p[(i+1)%l][0],p[(i+1)%l][1],p[(i+1)%l][2],
+                            p[(i+n+1)%l][0],p[(i+n+1)%l][1],p[(i+n+1)%l][2])
             
-        else:
-            pass
-            add_polygon(edges,
-                        points[i][0],points[i][1],points[i][2],
-                        points[i+1][0],points[i+1][1],points[i+1][2],
-                        points[i+num_steps][0],points[i+num_steps][1],points[i+num_steps][2])
-            add_polygon(edges,
-                        points[i][0],points[i][1],points[i][2],
-                        points[i+1+num_steps][0],points[i+1+num_steps][1],points[i+1+num_steps][2],
-                        points[i+num_steps][0],points[i+num_steps][1],points[i+num_steps][2])
-        i+=1
+            if lat != n:
+                add_polygon(edges,
+                            p[i+1][0],p[i+1][1],p[i+1][2],
+                            p[(i+2+n)%l][0],p[(i+2+n)%l][1],p[(i+2+n)%l][2],
+                            p[(i+n+1)%l][0],p[(i+n+1)%l][1],p[(i+n+1)%l][2])
+
 
 def generate_sphere( cx, cy, cz, r, step ):
     points = []
@@ -97,8 +89,25 @@ def generate_sphere( cx, cy, cz, r, step ):
     return points
         
 def add_torus( edges, cx, cy, cz, r0, r1, step ):
-    points = generate_torus(cx, cy, cz, r0, r1, step)
-    num_steps = int(1/step+0.1)
+    p = generate_torus(cx, cy, cz, r0, r1, step)
+    n = int(1/step+0.1)
+    l = len(p)
+    
+    for lat in range(0,n):
+        for lon in range(0,n):
+            i = lat * n + lon
+            
+            if lon != n:
+                add_polygon(edges,
+                            p[i][0],p[i][1],p[i][2],
+                            p[(i+1)%l][0],p[(i+1)%l][1],p[(i+1)%l][2],
+                            p[(i+n)%l][0],p[(i+n)%l][1],p[(i+n)%l][2])
+            
+            if lat != (n-1):
+                add_polygon(edges,
+                            p[i+1][0],p[i+1][1],p[i+1][2],
+                            p[(i+1+n)%l][0],p[(i+1+n)%l][1],p[(i+1+n)%l][2],
+                            p[(i+n)%l][0],p[(i+n)%l][1],p[(i+n)%l][2])
     
     
 
